@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Profile Fetcher</title>
+     
+</head>
+<body>
+    <div class="container">
+        <h2>JWT Profile Fetcher</h2>
+        <label for="jwtToken">Enter JWT Token:</label>
+        <!-- Use a hidden input type instead of textarea for JWT token -->
+        <input id="jwtToken" type="password" class="hidden-input">
+        <br><br>
+        <button onclick="fetchProfile()">Fetch Profile</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function fetchProfile() {
+            const token = document.getElementById('jwtToken').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!token) {
+                resultDiv.innerHTML = '<p style="color: red;">Please enter a JWT token.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/auth/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const profile = await response.json();
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(profile, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = '<p style="color: red;">Failed to fetch profile.Try with new token as the given token expired.</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
